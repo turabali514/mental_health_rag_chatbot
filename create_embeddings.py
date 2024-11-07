@@ -41,7 +41,7 @@ batched_docs = [splits[i:i + batch_size] for i in range(0, len(splits), batch_si
 embeddings = OpenAIEmbeddings(model="text-embedding-3-small", openai_api_key=os.environ["OPENAI_KEY"])
 # embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
-chroma_db = Chroma(persist_directory="data/chorama_db", collection_name=file_name, embedding_function=embeddings)
+chroma_db = Chroma(persist_directory="data/chroma_db", collection_name=file_name, embedding_function=embeddings)
 # Get the collection from the Chroma database
 collection = chroma_db.get()
 
@@ -52,7 +52,7 @@ if len(collection['ids']) == 0:
         chroma_db = Chroma.from_documents(
             documents=batch, 
             embedding=embeddings, 
-            persist_directory="data/chorama_db",
+            persist_directory="data/chroma_db",
             collection_name=file_name
         )
         print("Batch inserted...")

@@ -1,7 +1,6 @@
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain_community.vectorstores import Chroma
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_openai import OpenAIEmbeddings
 from langchain.retrievers.multi_query import MultiQueryRetriever
 from langchain_core.output_parsers import BaseOutputParser
@@ -9,7 +8,6 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 from typing import List
-import streamlit as st
 import os
 
 # Output parser will split the LLM result into a list of queries
@@ -30,7 +28,7 @@ open_ai_key = os.environ["OPENAI_KEY"]
 file_name = "mentalhealth_db"
 embeddings = OpenAIEmbeddings(model="text-embedding-3-small", openai_api_key=os.environ["OPENAI_KEY"])
 
-chroma_db = Chroma(persist_directory="data/chorama_db/docs_db_openai_2000_chunk/", collection_name=file_name, embedding_function=embeddings)
+chroma_db = Chroma(persist_directory="data/chroma_db/docs_db_openai_2000_chunk/", collection_name=file_name, embedding_function=embeddings)
 
 system_prompt = (
     "You are an assistant for question-answering tasks. "
@@ -58,7 +56,7 @@ prompt = ChatPromptTemplate.from_messages(
 
 QUERY_PROMPT = PromptTemplate(
     input_variables=["question"],
-    template="""You are an AI language model assistant. Your task is to generate three 
+    template="""You are an AI language model assistant. Your task is to generate two 
     different versions of the given user question to retrieve relevant documents from a vector 
     database. By generating multiple perspectives on the user question, your goal is to help
     the user overcome some of the limitations of the distance-based similarity search. 
@@ -73,7 +71,5 @@ rag_chain = ( {"context": multi_query_retriever | format_docs, "input": Runnable
 print("Chain created")
 
 def get_answer(question):
-    for chunk in rag_chain.stream(question):
-        print(chunk, end="", flush=True)
-
-
+    result = rag_chain.invoke(question)
+    return result
