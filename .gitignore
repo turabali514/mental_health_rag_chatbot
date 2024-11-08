@@ -1,2 +1,6 @@
 .env
 __pycache__/
+_*
+# Ignore everything in the data folder except chroma_db
+data/*
+!data/chroma_db

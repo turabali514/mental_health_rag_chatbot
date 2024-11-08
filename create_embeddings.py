@@ -24,18 +24,20 @@ for file in doc_paths:
         pdf_path = f"./{data_path}/" + file
         loader = PyPDFLoader(pdf_path)
         docs.extend(loader.load())
+        print("PDF loaded: ", file, "length: ", len(loader.load()))
     elif file.endswith('.docx'):
         doc_path = f"./{data_path}/" + file
         loader = Docx2txtLoader(doc_path)
         docs.extend(loader.load())
+        print("Docx loaded: ", file, "length: ", len(loader.load()))
         
 print("Total number of docs loaded: ", len(docs))
 
 # Split text
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100, add_start_index=True)
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=400, add_start_index=True)
 splits = text_splitter.split_documents(docs)
 
-batch_size = 5000  # Adjust based on rate limits and token constraints
+batch_size = 1000  # Adjust based on rate limits and token constraints
 batched_docs = [splits[i:i + batch_size] for i in range(0, len(splits), batch_size)]
 
 embeddings = OpenAIEmbeddings(model="text-embedding-3-small", openai_api_key=os.environ["OPENAI_KEY"])
